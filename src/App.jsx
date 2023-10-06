@@ -1,16 +1,18 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Profile from './pages/Profile';
-import ForgotPassword from './pages/ForgotPassword';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import Offers from './pages/Offers';
-import PageNotFound from './pages/PageNotFound';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import ForgotPassword from "./pages/ForgotPassword";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import Offers from "./pages/Offers";
+import PageNotFound from "./pages/PageNotFound";
+import Header from "./components/Header";
 
 function App() {
   return (
     <BrowserRouter>
+      <Header></Header>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
@@ -18,7 +20,7 @@ function App() {
         <Route path="/offers" element={<Offers />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route path="*" element={<PageNotFound/>} />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
   );
