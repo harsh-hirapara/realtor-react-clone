@@ -8,6 +8,8 @@ import SignUp from "./pages/SignUp";
 import Offers from "./pages/Offers";
 import PageNotFound from "./pages/PageNotFound";
 import Header from "./components/Header";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -22,6 +24,18 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </BrowserRouter>
   );
 }

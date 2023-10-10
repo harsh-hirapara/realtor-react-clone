@@ -1,16 +1,42 @@
 import React, { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { db, auth } from "../firebase";
+import { toast } from "react-toastify";
 
 function SignUp() {
   const [formData, setFormData] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
   function handleOnChange(e) {
     setFormData((previousState) => ({
       ...previousState,
       [e.target.id]: e.target.value,
     }));
+  }
+  async function handleOnSubmit(e) {
+    e.preventDefault();
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const user = userCredential.user;
+      const { password, ...formDataCopy } = formData;
+      formDataCopy.timestamp = serverTimestamp();
+
+      const docRef = doc(db, "users", user.uid);
+
+      await setDoc(docRef, formDataCopy);
+      toast.success("sign up success");
+      navigate("/");
+    } catch (err) {
+      toast.error("Something went wrong with the registration");
+    }
   }
   return (
     <section>
@@ -25,7 +51,7 @@ function SignUp() {
         </div>
         <div className="w-full md:w-[67%] lg:w-[40%] lg:ml-20 ">
           <form>
-          <input
+            <input
               type="text"
               id="name"
               value={formData.name}
@@ -85,8 +111,9 @@ function SignUp() {
             <button
               className="w-full bg-blue-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-blue-800"
               type="submit"
+              onClick={handleOnSubmit}
             >
-              Sign In
+              Sign Up
             </button>
             <div className="flex items-center my-4 before:border-t before:flex-1 before:border-gray-300 after:border-t after:flex-1 after:border-gray-300">
               <p className="text-center font-semibold mx-4">OR</p>
