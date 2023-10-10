@@ -1,12 +1,26 @@
 import React, { useState } from "react";
 import OAuth from "../components/OAuth";
 import { Link } from "react-router-dom";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../firebase";
+import { toast } from "react-toastify";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
 
   function handleOnChange(e) {
     setEmail(e.target.value);
+  }
+
+  async function handleOnSubmit(e) {
+    e.preventDefault();
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast.success("Email was sent");
+    } catch (err) {
+      console.log("err", err)
+      toast.error("Could not send ");
+    }
   }
   return (
     <section>
@@ -19,19 +33,19 @@ function ForgotPassword() {
             className="w-full rounded-2xl"
           ></img>
         </div>
-        <div className="w-full md:w-[67%] lg:w-[40%] lg:ml-20 ">
-          <form>
+        <div className="w-full md:w-[67%] lg:w-[40%] lg:ml-20">
+          <form onSubmit={handleOnSubmit}>
             <input
               type="email"
               id="email"
               value={email}
               placeholder="Email address"
               onChange={handleOnChange}
-              className="mb-6 w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded transition ease-in-out "
+              className="mb-6 w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded transition ease-in-out"
             ></input>
             <div className="flex justify-between whitespace-nowrap text-sm sm:text-lg mb-6">
               <p>
-                Don't have a account?{" "}
+                Don't have a account?
                 <Link
                   to="/sign-up"
                   className="text-red-600 hover:text-red-700 transition duration-200 ease-in-out ml-1"
