@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { toast } from "react-toastify";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -25,6 +26,13 @@ function SignIn() {
         formData.password
       );
       const user = userCredential.user;
+
+      const userDocSnap = await getDoc(doc(db, "users", user.uid));
+      if (userDocSnap.data().name) {
+        await updateProfile(auth.currentUser, {
+          displayName: userDocSnap.data().name,
+        });
+      }
       if (user) {
         toast.success("Sign in success");
         navigate("/");

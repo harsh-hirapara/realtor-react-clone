@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { updateProfile } from "firebase/auth";
+import { toast } from "react-toastify";
+import { doc, updateDoc } from "firebase/firestore";
 
 function Profile() {
   const [formData, setFormData] = useState({
@@ -8,11 +11,38 @@ function Profile() {
     email: auth.currentUser.email,
   });
   const navigate = useNavigate();
+  const [changeDetail, setChangeDetail] = useState(false);
   const { name, email } = formData;
 
   function onLogout() {
     auth.signOut();
     navigate("/");
+  }
+  function onChange(e) {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
+  }
+  async function onSubmit() {
+    try {
+      if (auth.currentUser.displayName !== name) {
+        // update display name
+        await updateProfile(auth.currentUser, {
+          displayName: name,
+        });
+
+        // update name in the firestore
+        const docRef = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(docRef, {
+          name,
+        });
+      }
+      toast.success("Profile details updated");
+    } catch (err) {
+      console.log(err, "error")
+      toast.error("could not update the profile details");
+    }
   }
   return (
     <>
@@ -25,8 +55,11 @@ function Profile() {
               name="name"
               id="name"
               value={name}
-              disabled
-              className="mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out"
+              disabled={!changeDetail}
+              onChange={onChange}
+              className={`mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out disabled:bg-gray-200 ${
+                changeDetail && "bg-red-200 focus:bg-red-200"
+              }`}
             />
             <input
               type="email"
@@ -34,14 +67,20 @@ function Profile() {
               id="email"
               value={email}
               disabled
-              className="mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out"
+              className="mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out disabled:bg-gray-200"
             />
 
             <div className="flex justify-between whitespace-nowrap text-sm sm:text-lg">
               <p>
                 Do you want to change your name?
-                <span className="text-red-600 hover:text-red-800 transition ease-in-out duration-200 ml-1  cursor-pointer">
-                  Edit
+                <span
+                  onClick={() => {
+                    changeDetail && onSubmit();
+                    setChangeDetail((prevState) => !prevState);
+                  }}
+                  className="text-red-600 hover:text-red-800 transition ease-in-out duration-200 ml-1  cursor-pointer"
+                >
+                  {changeDetail ? "Apply Change" : "Edit"}
                 </span>
               </p>
               <p

@@ -95,7 +95,7 @@ function SignUp() {
                   to="/sign-in"
                   className="text-red-600 hover:text-red-700 transition duration-200 ease-in-out ml-1"
                 >
-                  Sign up
+                  Sign in
                 </Link>
               </p>
               <p>
