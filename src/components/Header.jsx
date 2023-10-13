@@ -24,7 +24,7 @@ function Header() {
     });
   }, [auth]);
   return (
-    <div className="bg-white border-b shadow-sm sticky top-0 z-50s">
+    <div className="bg-white border-b shadow-sm sticky top-0 z-40">
       <header className="flex justify-between items-center max-w-6xl mx-auto">
         <div>
           <img
